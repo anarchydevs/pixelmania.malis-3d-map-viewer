@@ -7,8 +7,8 @@
     <ProjectGuid>{DC06A28A-0061-4E3E-BF32-A6CF830BEDD9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Malis_Map_Viewer</RootNamespace>
-    <AssemblyName>Malis Map Viewer</AssemblyName>
+    <RootNamespace>MalisDungeonMap</RootNamespace>
+    <AssemblyName>Mali%27s Dungeon Map</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -49,6 +49,8 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DungeonMap.cs" />
+    <Compile Include="MainWindow.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

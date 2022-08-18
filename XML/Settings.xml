@@ -1,43 +1,40 @@
 ﻿<?xml version="1.0" standalone="yes"?>
 <root>
-  <View>
-    <View view_layout ="horizontal"   max_size="Point(154,15)" min_size="Point(154,15)">
-      <TextView value="Offset X:" max_size="Point(60,15)" min_size="Point(60,15)" />
-        <Slider name="OffsetX"
-                layout_borders="Rect(3,0,3,0)"
-                min_value="-6"
-                max_value="6"/>
-    </View>
-    <View view_layout ="horizontal"   max_size="Point(154,15)" min_size="Point(154,15)">
-      <TextView value="Offset Y:"  max_size="Point(60,15)" min_size="Point(60,15)"/>
-      <Slider name="OffsetY"
-              layout_borders="Rect(3,0,3,0)"
-              min_value="0"
-              max_value="5"/>
-    </View>
-    <View view_layout ="horizontal"   max_size="Point(154,15)" min_size="Point(154,15)">
-      <TextView value="Offset Z:"  max_size="Point(60,15)" min_size="Point(60,15)"/>
-      <Slider name="OffsetZ"
-              layout_borders="Rect(3,0,3,0)"
-              min_value="0"
-              max_value="90"/>
-    </View>
-    <View view_layout ="horizontal"  max_size="Point(154,15)" min_size="Point(154,15)">
-      <TextView value="Scale:"  max_size="Point(60,15)" min_size="Point(60,15)"/>
-      <Slider name="Scale"
-              layout_borders="Rect(3,0,3,0)"
-              min_value="10"
-              max_value="75"/>    
-    </View>
-    <View view_layout ="horizontal"  max_size="Point(154,15)" min_size="Point(154,15)">
-      <TextView value="Static:"  max_size="Point(53,15)" min_size="Point(53,15)"/>
-      <CheckBox name="Static" max_size="Point(60,15)" min_size="Point(60,15)"/>
-      <HLayoutSpacer/>
-    </View>
-    <View view_layout ="horizontal"  max_size="Point(154,15)" min_size="Point(154,15)">
-      <TextView value="Missions:"  max_size="Point(53,15)" min_size="Point(53,15)"/>
-      <CheckBox name="Mission" max_size="Point(60,15)" min_size="Point(60,15)"/>
-      <HLayoutSpacer/>
-    </View>
-  </View>
+	<View  max_size="Point(200,15)">
+		<View view_layout ="horizontal"   max_size="Point(154,15)" min_size="Point(154,15)">
+			<TextView value="Offset X:" max_size="Point(60,15)" min_size="Point(60,15)" />
+			<Slider name="OffsetX"
+					layout_borders="Rect(3,0,3,0)"
+					default_value ="0.48"
+					min_value="-1"
+					max_value="1"/>
+		</View>
+		<View view_layout ="horizontal"   max_size="Point(154,15)" min_size="Point(154,15)">
+			<TextView value="Offset Y:"  max_size="Point(60,15)" min_size="Point(60,15)"/>
+			<Slider name="OffsetY"
+					layout_borders="Rect(3,0,3,0)"
+					default_value ="0.21"
+					min_value="-1"
+					max_value="1"/>
+		</View>
+		<View view_layout ="horizontal"  max_size="Point(154,15)" min_size="Point(154,15)">
+			<TextView value="Scale:"  max_size="Point(60,15)" min_size="Point(60,15)"/>
+			<Slider name="Scale"
+					layout_borders="Rect(3,0,3,0)"
+					default_value ="450"
+					min_value="100"
+					max_value="1000"/>
+		</View>
+		<View view_layout="horizontal">
+			<View max_size="Point(100,15)" min_size="Point(100,15)">
+				<TextView value="Static Display:"  max_size="Point(100,15)" min_size="Point(100,15)"/>
+				<TextView value="Mission Reward:"  max_size="Point(53,15)" min_size="Point(100,15)"/>
+			</View>
+			<View>
+				<CheckBox name="Static" max_size="Point(60,15)" min_size="Point(60,15)"/>
+				<CheckBox name="Mission" max_size="Point(60,15)" min_size="Point(60,15)"/>
+			</View>
+			<HLayoutSpacer/>
+		</View>
+	</View>
 </root>
