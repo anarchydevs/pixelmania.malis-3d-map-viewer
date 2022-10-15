@@ -1,13 +1,6 @@
-﻿using AOSharp.Common.GameData;
-using AOSharp.Common.GameData.UI;
-using AOSharp.Core;
-using AOSharp.Core.Inventory;
+﻿using AOSharp.Common.GameData.UI;
 using AOSharp.Core.UI;
-using SmokeLounge.AOtomation.Messaging.GameData;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 namespace MalisDungeonViewer
 {

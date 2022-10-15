@@ -33,16 +33,35 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AOSharp.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\aosharp\AOSharp.Common\bin\Debug\AOSharp.Common.dll</HintPath>
+    <Reference Include="AOSharp.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\AOSharpSDK.1.0.15\lib\net48\AOSharp.Common.dll</HintPath>
     </Reference>
-    <Reference Include="AOSharp.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\aosharp\AOSharp.Core\bin\Debug\AOSharp.Core.dll</HintPath>
+    <Reference Include="AOSharp.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\AOSharpSDK.1.0.15\lib\net48\AOSharp.Core.dll</HintPath>
     </Reference>
-    <Reference Include="AOSharp.Recast">
-      <HintPath>..\aosharp\AOSharp.Recast\bin\Debug\AOSharp.Recast.dll</HintPath>
+    <Reference Include="AOSharp.Recast, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\AOSharpSDK.Nav.1.0.1\lib\net48\AOSharp.Recast.dll</HintPath>
+    </Reference>
+    <Reference Include="cai-nav, Version=0.4.0.0, Culture=neutral, processorArchitecture=x86">
+      <HintPath>packages\AOSharpSDK.Nav.1.0.1\lib\net48\cai-nav.dll</HintPath>
+    </Reference>
+    <Reference Include="cai-nav-rcn, Version=0.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <HintPath>packages\AOSharpSDK.Nav.1.0.1\lib\net48\cai-nav-rcn.dll</HintPath>
+    </Reference>
+    <Reference Include="cai-nmbuild, Version=0.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\AOSharpSDK.Nav.1.0.1\lib\net48\cai-nmbuild.dll</HintPath>
+    </Reference>
+    <Reference Include="cai-nmgen, Version=0.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\AOSharpSDK.Nav.1.0.1\lib\net48\cai-nmgen.dll</HintPath>
+    </Reference>
+    <Reference Include="cai-nmgen-rcn, Version=0.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <HintPath>packages\AOSharpSDK.Nav.1.0.1\lib\net48\cai-nmgen-rcn.dll</HintPath>
+    </Reference>
+    <Reference Include="cai-util, Version=0.5.0.0, Culture=neutral, processorArchitecture=x86">
+      <HintPath>packages\AOSharpSDK.Nav.1.0.1\lib\net48\cai-util.dll</HintPath>
+    </Reference>
+    <Reference Include="NavmeshMovementController, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\AOSharpSDK.Nav.1.0.1\lib\net48\NavmeshMovementController.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -56,6 +75,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="XML\Settings.xml">

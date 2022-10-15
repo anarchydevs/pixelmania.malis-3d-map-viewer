@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Linq;
 using AOSharp.Core;
 using AOSharp.Core.UI;
 using AOSharp.Common.GameData;
 using System.Collections.Generic;
-using AOSharp.Common.GameData.UI;
-using AOSharp.Recast;
-using System.Threading.Tasks;
-using System.Collections.Concurrent;
-using System.Runtime.InteropServices;
 
 namespace MalisDungeonViewer
 {
@@ -41,7 +35,11 @@ namespace MalisDungeonViewer
                 DungeonMap.AddPyramid(IdentityType.SimpleChar, 2f, DebuggingColor.Red);
                 DungeonMap.AddPyramid(DynelManager.LocalPlayer.Name, 3f, DebuggingColor.Green);
                 DungeonMap.AddLine(IdentityType.Terminal, DebuggingColor.Purple);
-                DungeonMap.FilteredZoneIds.AddRange(new List<int> { PlayfieldIds.Grid, PlayfieldIds.FixerGrid });
+                DungeonMap.FilteredZoneIds.AddRange(new List<int> 
+                { 
+                    PlayfieldIds.Grid, 
+                    PlayfieldIds.FixerGrid 
+                });
                 DungeonMap.CreateMeshTask();
 
                 Chat.RegisterCommand("mapsettings", (string command, string[] param, ChatWindow chatWindow) => _window.Show());
@@ -75,7 +73,7 @@ namespace MalisDungeonViewer
     }
     public class PlayfieldIds
     {
-        public const int Grid = 357954;
+        public const int Grid = 359683;
         public const int FixerGrid = 355703;
     }
 }

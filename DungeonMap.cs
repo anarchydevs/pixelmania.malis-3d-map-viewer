@@ -4,7 +4,6 @@ using AOSharp.Core;
 using AOSharp.Core.UI;
 using AOSharp.Common.GameData;
 using System.Collections.Generic;
-using AOSharp.Common.GameData.UI;
 using AOSharp.Recast;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
@@ -236,6 +235,9 @@ public static class DungeonMap
 
     internal static void RenderMap(Vector3 mapColor, bool showLegend)
     {
+        if (FilteredZoneIds.Contains(Playfield.Identity.Instance))
+            return;
+
         if (_edgeMesh.Count == 0)
             return;
 
