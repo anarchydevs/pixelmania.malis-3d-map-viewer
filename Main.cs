@@ -35,11 +35,14 @@ namespace MalisDungeonViewer
                 DungeonMap.AddPyramid(IdentityType.SimpleChar, 2f, DebuggingColor.Red);
                 DungeonMap.AddPyramid(DynelManager.LocalPlayer.Name, 3f, DebuggingColor.Green);
                 DungeonMap.AddLine(IdentityType.Terminal, DebuggingColor.Purple);
+
+                //you can add more zones by adding them to this list (shift + f9 to see the resourceid of the dungeon)
                 DungeonMap.FilteredZoneIds.AddRange(new List<int> 
                 { 
                     PlayfieldIds.Grid, 
-                    PlayfieldIds.FixerGrid 
+                    PlayfieldIds.FixerGrid,
                 });
+
                 DungeonMap.CreateMeshTask();
 
                 Chat.RegisterCommand("mapsettings", (string command, string[] param, ChatWindow chatWindow) => _window.Show());
@@ -73,7 +76,7 @@ namespace MalisDungeonViewer
     }
     public class PlayfieldIds
     {
-        public const int Grid = 359683;
-        public const int FixerGrid = 355703;
+        public const int Grid = 152;
+        public const int FixerGrid = 4107;
     }
 }

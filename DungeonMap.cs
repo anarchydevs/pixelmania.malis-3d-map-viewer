@@ -387,7 +387,7 @@ public static class DungeonMap
 
     internal static void CreateMeshTask()
     {
-        if (FilteredZoneIds.Contains(Playfield.Identity.Instance))
+        if (FilteredZoneIds.Contains(Playfield.ModelIdentity.Instance))
             return;
 
         if (DynelManager.LocalPlayer.Room == null)
