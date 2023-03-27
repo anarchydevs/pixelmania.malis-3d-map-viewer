@@ -10,24 +10,29 @@ namespace MalisDungeonViewer
     {
         public static Settings Settings;
         private MainWindow _window;
+        private bool _hideMap = false;
+
         public override void Run(string pluginDir)
         {
             try
             {
-                Chat.WriteLine("- Mali's Dungeon Map -");
+                Chat.WriteLine("- Mali's Dungeon Map -\n /mapsettings - opens settings window \n /togglemap - toggles map");
                 Game.TeleportEnded += Game_OnTeleportEnded;
                 Game.OnUpdate += OnUpdate;
 
                 Settings = new Settings("Mali3DMap_Settings");
-                Settings.AddVariable("OffsetX", 0.48f);
-                Settings.AddVariable("OffsetY", 0.20f);
-                Settings.AddVariable("Scale", 450);
+                Settings.AddVariable("OffsetX", 0f);
+                Settings.AddVariable("OffsetY", 0f);
+                Settings.AddVariable("Scale", 250);
                 Settings.AddVariable("Static", false);
-                Settings.AddVariable("Mission", false);
+                Settings.AddVariable("Mission", true);
+
                 Settings.Save();
 
                 _window = new MainWindow("Mali's Dungeon Map", $"{pluginDir}\\XML\\Settings.xml");
+
                 _window.Show();
+                _window.Window.MoveToCenter();
 
                 DungeonMap.AddCube(IdentityType.Terminal, 3f, DebuggingColor.Purple);
                 DungeonMap.AddSquare(IdentityType.Door, 2f, DebuggingColor.Yellow);
@@ -46,6 +51,8 @@ namespace MalisDungeonViewer
                 DungeonMap.CreateMeshTask();
 
                 Chat.RegisterCommand("mapsettings", (string command, string[] param, ChatWindow chatWindow) => _window.Show());
+                Chat.RegisterCommand("togglemap", (string command, string[] param, ChatWindow chatWindow) => _hideMap = !_hideMap);
+
             }
             catch (Exception e)
             {
@@ -55,6 +62,9 @@ namespace MalisDungeonViewer
 
         private unsafe void OnUpdate(object s, float deltaTime)
         {
+            if (_hideMap)
+                return;
+
             DungeonMap.RenderMap(DebuggingColor.Yellow, true);
            _window.ReadSliderSettings();
         }

@@ -5,7 +5,7 @@
 			<TextView value="Offset X:" max_size="Point(60,15)" min_size="Point(60,15)" />
 			<Slider name="OffsetX"
 					layout_borders="Rect(3,0,3,0)"
-					default_value ="0.48"
+					default_value ="0"
 					min_value="-1"
 					max_value="1"/>
 		</View>
@@ -13,7 +13,7 @@
 			<TextView value="Offset Y:"  max_size="Point(60,15)" min_size="Point(60,15)"/>
 			<Slider name="OffsetY"
 					layout_borders="Rect(3,0,3,0)"
-					default_value ="0.21"
+					default_value ="0"
 					min_value="-1"
 					max_value="1"/>
 		</View>
@@ -21,7 +21,7 @@
 			<TextView value="Scale:"  max_size="Point(60,15)" min_size="Point(60,15)"/>
 			<Slider name="Scale"
 					layout_borders="Rect(3,0,3,0)"
-					default_value ="450"
+					default_value ="250"
 					min_value="100"
 					max_value="1000"/>
 		</View>

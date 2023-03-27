@@ -4,7 +4,6 @@ using AOSharp.Core;
 using AOSharp.Core.UI;
 using AOSharp.Common.GameData;
 using System.Collections.Generic;
-using AOSharp.Recast;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
@@ -14,7 +13,7 @@ public static class DungeonMap
 {
     private static Rect _roomBorder = new Rect();
     private static Vector3 _floorCenter = new Vector3();
-    private static ConcurrentBag<Edge> _edgeMesh = new ConcurrentBag<Edge>();
+    private static Dictionary<int, List<EdgeData>> _edgeMesh = new Dictionary<int, List<EdgeData>>();
     private static List<SphereEntity> _circles = new List<SphereEntity>();
     private static List<LineEntity> _lines = new List<LineEntity>();
     private static List<CubeEntity> _cubes = new List<CubeEntity>();
@@ -25,6 +24,7 @@ public static class DungeonMap
     public static float Scale = 250;
     public static bool IsStatic = false;
     public static bool MissionPing = false;
+    private static int? _cachedFloor = null;
 
     public static void AddCircle(string name, float size, Vector3 color)
     {
@@ -236,7 +236,7 @@ public static class DungeonMap
 
     internal static void RenderMap(Vector3 mapColor, bool showLegend)
     {
-        if (FilteredZoneIds.Contains(Playfield.Identity.Instance))
+        if (FilteredZoneIds.Contains(Playfield.ModelIdentity.Instance))
             return;
 
         if (_edgeMesh.Count == 0)
@@ -259,12 +259,24 @@ public static class DungeonMap
     {
         FindFloorCenter();
 
-        foreach (Edge edge in _edgeMesh.ToList())
+        foreach (EdgeData edgeData in _edgeMesh[DynelManager.LocalPlayer.Room.Floor].ToList())
         {
-            if (!(edge.V1.X > _roomBorder.MinX - 1 && edge.V1.X < _roomBorder.MaxX + 1))
-                continue;
 
-            Debug.DrawLine(RecalculateMesh(edge.V1 - _floorCenter), RecalculateMesh(edge.V2 - _floorCenter), color);
+            if (!edgeData.Visited)
+            {
+                if (DynelManager.LocalPlayer.Room.Instance == edgeData.Instance)
+                    edgeData.Visited = true;
+            }
+
+            Vector3 colors = edgeData.Visited ? DebuggingColor.Green : DebuggingColor.Yellow;
+
+            foreach (var edge in edgeData.Edge)
+            {
+                if (!(edge.V1.X > _roomBorder.MinX - 1 && edge.V1.X < _roomBorder.MaxX + 1))
+                    continue;
+
+                Debug.DrawLine(RecalculateMesh(edge.V1 - _floorCenter), RecalculateMesh(edge.V2 - _floorCenter), colors);
+            }
         }
     }
 
@@ -393,17 +405,22 @@ public static class DungeonMap
         if (DynelManager.LocalPlayer.Room == null)
             return;
 
+        _cachedFloor = null;
+
         Task meshBorderTask = new Task(() => FindMeshBorder(CreateDungeonMesh(), 2000));
         meshBorderTask.Start();
     }
 
-    private static List<Mesh> CreateDungeonMesh()
+    private static Dictionary<int, List<MeshData>> CreateDungeonMesh()
     {
         DungeonRDBTilemap tilemap = Playfield.RDBTilemap as DungeonRDBTilemap;
-        List<Mesh> meshList = new List<Mesh>();
+        Dictionary<int, List<MeshData>> meshList = new Dictionary<int, List<MeshData>>();
 
         foreach (Room room in Playfield.Rooms)
         {
+            if (!meshList.ContainsKey(room.Floor))
+                meshList.Add(room.Floor, new List<MeshData>());
+
             int num = (int)room.LocalRect.MaxX - (int)room.LocalRect.MinX;
             int num2 = (int)room.LocalRect.MaxY - (int)room.LocalRect.MinY;
             float num3 = (float)num * tilemap.TileSize;
@@ -474,58 +491,80 @@ public static class DungeonMap
                 }
             }
 
-            meshList.Add(new Mesh
+            meshList[room.Floor].Add(new MeshData
             {
                 Triangles = list3,
                 Vertices = list2,
                 Position = room.Position - new Vector3(0f, room.YOffset, 0f),
                 Rotation = Quaternion.CreateFromAxisAngle(Vector3.Up, (double)room.Rotation * (Math.PI / 180.0)),
-                Scale = new Vector3(1f, 1f, 1f)
+                Scale = new Vector3(1f, 1f, 1f),
+                Instance = room.Instance
             });
         }
         return meshList;
     }
 
-    private static void FindMeshBorder(List<Mesh> meshes, int maxDrawDist)
+    private static void FindMeshBorder(Dictionary<int, List<MeshData>> meshDict, int maxDrawDist)
     {
         FindFloorCenter();
 
-        _edgeMesh = new ConcurrentBag<Edge>();
+        ConcurrentDictionary<int, ConcurrentBag<EdgeData>> edgeMesh = new ConcurrentDictionary<int, ConcurrentBag<EdgeData>>();
 
-        Parallel.ForEach(meshes.ToList(), mesh =>
+        foreach (var meshPerFloor in meshDict)
         {
-            Dictionary<Edge, int> edgeCompareDict = new Dictionary<Edge, int>();
+            var meshes = meshPerFloor.Value;
 
-            for (int j = 0; j < mesh.Triangles.Count() / 3; j++)
+            edgeMesh.TryAdd(meshPerFloor.Key, new ConcurrentBag<EdgeData>());
+
+            Parallel.ForEach(meshes.ToList(), mesh =>
             {
-                int tri = j * 3;
-                int tri1 = mesh.Triangles[tri];
-                int tri2 = mesh.Triangles[tri + 1];
-                int tri3 = mesh.Triangles[tri + 2];
+                Dictionary<Edge, int> edgeCompareDict = new Dictionary<Edge, int>();
 
-                Vector3[] verts = new Vector3[3]
+                for (int j = 0; j < mesh.Triangles.Count() / 3; j++)
                 {
+                    int tri = j * 3;
+                    int tri1 = mesh.Triangles[tri];
+                    int tri2 = mesh.Triangles[tri + 1];
+                    int tri3 = mesh.Triangles[tri + 2];
+
+                    Vector3[] verts = new Vector3[3]
+                    {
                     mesh.LocalToWorldMatrix.MultiplyPoint3x4(mesh.Vertices[tri1]),
                     mesh.LocalToWorldMatrix.MultiplyPoint3x4(mesh.Vertices[tri2]),
                     mesh.LocalToWorldMatrix.MultiplyPoint3x4(mesh.Vertices[tri3])
-                };
+                    };
 
-                if (verts.Any(x => Vector3.Distance(x, DynelManager.LocalPlayer.Position) > maxDrawDist))
-                    continue;
+                    if (verts.Any(x => Vector3.Distance(x, DynelManager.LocalPlayer.Position) > maxDrawDist))
+                        continue;
 
-                EdgeFilter(verts[0], verts[1], edgeCompareDict);
-                EdgeFilter(verts[1], verts[2], edgeCompareDict);
-                EdgeFilter(verts[2], verts[0], edgeCompareDict);
+                    EdgeFilter(verts[0], verts[1], edgeCompareDict);
+                    EdgeFilter(verts[1], verts[2], edgeCompareDict);
+                    EdgeFilter(verts[2], verts[0], edgeCompareDict);
+                }
 
-            }
+                EdgeData edgeData = new EdgeData();
+                edgeData.Edge = new List<Edge>();
+                edgeData.Visited = false;
+                edgeData.Instance = mesh.Instance;
+                foreach (var edge in edgeCompareDict.Where(x => x.Value == 1).ToList())
+                {
+                    var bb = new Edge { V1 = (edge.Key.V1) * new Vector3(1, 0, 1), V2 = (edge.Key.V2) * new Vector3(1, 0, 1) };
+                    edgeData.Edge.Add(bb);
+                }
 
-            foreach (var edge in edgeCompareDict.Where(x => x.Value == 1).ToList())
-            {
-                _edgeMesh.Add(new Edge { V1 = (edge.Key.V1) * new Vector3(1, 0, 1), V2 = (edge.Key.V2) * new Vector3(1, 0, 1) });
-            }
+                edgeMesh[meshPerFloor.Key].Add(edgeData);
 
-            edgeCompareDict = null;
-        });
+                edgeCompareDict = null;
+            });
+        }
+        _edgeMesh = edgeMesh.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.ToList());
+    }
+
+    public class EdgeData
+    {
+        public List<Edge> Edge;
+        public int Instance;
+        public bool Visited = false;
     }
 
     private static void FindFloorCenter()
@@ -533,23 +572,25 @@ public static class DungeonMap
         if (DynelManager.LocalPlayer.Room == null)
             return;
 
+        if (_cachedFloor == DynelManager.LocalPlayer.Room.Floor)
+            return;
+
         _roomBorder = new Rect { MinY = 1000000, MinX = 1000000 };
 
-        foreach (Room room in Playfield.Rooms)
+        foreach (Room room in Playfield.Rooms.Where(x=>x.Floor == DynelManager.LocalPlayer.Room.Floor))
         {
-            if (room.Floor == DynelManager.LocalPlayer.Room.Floor)
-            {
-                if (room.Rect.MaxX > _roomBorder.MaxX)
-                    _roomBorder.MaxX = room.Rect.MaxX;
-                if (room.Rect.MaxY > _roomBorder.MaxY)
-                    _roomBorder.MaxY = room.Rect.MaxY;
-                if (room.Rect.MinY < _roomBorder.MinY)
-                    _roomBorder.MinY = room.Rect.MinY;
-                if (room.Rect.MinX < _roomBorder.MinX)
-                    _roomBorder.MinX = room.Rect.MinX;
-            }
+            if (room.Rect.MaxX > _roomBorder.MaxX)
+                _roomBorder.MaxX = room.Rect.MaxX;
+            if (room.Rect.MaxY > _roomBorder.MaxY)
+                _roomBorder.MaxY = room.Rect.MaxY;
+            if (room.Rect.MinY < _roomBorder.MinY)
+                _roomBorder.MinY = room.Rect.MinY;
+            if (room.Rect.MinX < _roomBorder.MinX)
+                _roomBorder.MinX = room.Rect.MinX;
         }
         _floorCenter = new Vector3((_roomBorder.MaxX + _roomBorder.MinX) / 2, 0, (_roomBorder.MaxY + _roomBorder.MinY) / 2);
+
+        _cachedFloor = DynelManager.LocalPlayer.Room.Floor;
     }
 
     private static void EdgeFilter(Vector3 vert1, Vector3 vert2, Dictionary<Edge, int> edgeCompareDict)
@@ -625,6 +666,11 @@ public static class DungeonMap
         return IsStatic? new Quaternion(Camera.Rotation * Vector3.Right, (float)((-90 * Math.PI / 180))):new Quaternion(Camera.Rotation * Vector3.Right, (float)((-30 * Math.PI / 180)));
     }
 
+    public class MeshData : Mesh
+    {
+        public int Instance;
+    }
+
     public class Config
     {
         public Vector3 Offset;
@@ -672,7 +718,7 @@ public static class DungeonMap
         public Vector3 Color;
     }
 
-    private class Edge
+    public class Edge
     {
         public Vector3 V1;
         public Vector3 V2;
