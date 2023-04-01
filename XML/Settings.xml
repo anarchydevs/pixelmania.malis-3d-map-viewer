@@ -25,6 +25,14 @@
 					min_value="100"
 					max_value="1000"/>
 		</View>
+		<View view_layout ="horizontal"  max_size="Point(154,15)" min_size="Point(154,15)">
+			<TextView value="Distance:"  max_size="Point(60,15)" min_size="Point(60,15)"/>
+			<Slider name="Distance"
+					layout_borders="Rect(3,0,3,0)"
+					default_value ="1000"
+					min_value="0"
+					max_value="1000"/>
+		</View>	
 		<View view_layout="horizontal">
 			<View max_size="Point(100,15)" min_size="Point(100,15)">
 				<TextView value="Static Display:"  max_size="Point(100,15)" min_size="Point(100,15)"/>
@@ -32,7 +40,7 @@
 			</View>
 			<View>
 				<CheckBox name="Static" max_size="Point(60,15)" min_size="Point(60,15)"/>
-				<CheckBox name="Mission" max_size="Point(60,15)" min_size="Point(60,15)"/>
+				<CheckBox name="Mission"  max_size="Point(60,15)" min_size="Point(60,15)"/>
 			</View>
 			<HLayoutSpacer/>
 		</View>

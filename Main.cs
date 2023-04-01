@@ -24,6 +24,7 @@ namespace MalisDungeonViewer
                 Settings.AddVariable("OffsetX", 0f);
                 Settings.AddVariable("OffsetY", 0f);
                 Settings.AddVariable("Scale", 250);
+                Settings.AddVariable("Distance", 1000);
                 Settings.AddVariable("Static", false);
                 Settings.AddVariable("Mission", true);
 
@@ -81,6 +82,7 @@ namespace MalisDungeonViewer
             Settings["Scale"] = DungeonMap.Scale;
             Settings["Static"] = DungeonMap.IsStatic;
             Settings["Mission"] = DungeonMap.MissionPing;
+            Settings["Distance"] = DungeonMap.Distance;
             Settings.Save();
         }
     }

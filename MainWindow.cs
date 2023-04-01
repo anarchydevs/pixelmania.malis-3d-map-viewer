@@ -28,6 +28,8 @@ namespace MalisDungeonViewer
                     Views.Static.SetValue(Main.Settings["Static"].AsBool());
                 if (Window.FindView("Mission", out Views.Mission))
                     Views.Mission.SetValue(Main.Settings["Mission"].AsBool());
+                if (Window.FindView("Distance", out Views.Distance))
+                    Views.Distance.SetValue(Main.Settings["Distance"].AsFloat());
             }
             catch (Exception e)
             {
@@ -50,6 +52,7 @@ namespace MalisDungeonViewer
             DungeonMap.Scale = Views.Scale.GetValue();
             DungeonMap.IsStatic = Views.Static.IsChecked;
             DungeonMap.MissionPing = Views.Mission.IsChecked;
+            DungeonMap.Distance = Views.Distance.GetValue();
         }
     }
 
@@ -59,6 +62,7 @@ namespace MalisDungeonViewer
         public SliderView OffsetY;
         public SliderView OffsetZ;
         public SliderView Scale;
+        public SliderView Distance;
         public Checkbox Static;
         public Checkbox Mission;
     }

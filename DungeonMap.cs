@@ -24,6 +24,7 @@ public static class DungeonMap
     public static float Scale = 250;
     public static bool IsStatic = false;
     public static bool MissionPing = false;
+    public static float Distance = 1000;
     private static int? _cachedFloor = null;
 
     public static void AddCircle(string name, float size, Vector3 color)
@@ -248,16 +249,19 @@ public static class DungeonMap
         if (Camera.Pointer == IntPtr.Zero)
             return;
 
-        DrawMap(mapColor);
+        DrawMap(mapColor, Distance);
 
         if (!showLegend)
             return;
 
-        DrawLegend();
+        DrawLegend(Distance);
     }
-    private static void DrawMap(Vector3 color)
+    private static void DrawMap(Vector3 color, float distance)
     {
         FindFloorCenter();
+
+        Vector3 playerPos = DynelManager.LocalPlayer.Position;
+        playerPos.Y = 0f;
 
         foreach (EdgeData edgeData in _edgeMesh[DynelManager.LocalPlayer.Room.Floor].ToList())
         {
@@ -268,11 +272,11 @@ public static class DungeonMap
                     edgeData.Visited = true;
             }
 
-            Vector3 colors = edgeData.Visited ? DebuggingColor.Green : DebuggingColor.Yellow;
+            Vector3 colors = edgeData.Visited ? DebuggingColor.Green : color;
 
             foreach (var edge in edgeData.Edge)
             {
-                if (!(edge.V1.X > _roomBorder.MinX - 1 && edge.V1.X < _roomBorder.MaxX + 1))
+                if ((playerPos - edge.V1).LengthSquared() > distance * distance)
                     continue;
 
                 Debug.DrawLine(RecalculateMesh(edge.V1 - _floorCenter), RecalculateMesh(edge.V2 - _floorCenter), colors);
@@ -280,7 +284,7 @@ public static class DungeonMap
         }
     }
 
-    private unsafe static void DrawLegend()
+    private unsafe static void DrawLegend(float distance)
     {
         Mission mission = Mission.List.FirstOrDefault(x => (*(MissionMemStruct*)x.Pointer).Playfield == Playfield.ModelIdentity);
         Dynel mishDynel = null;
@@ -312,9 +316,15 @@ public static class DungeonMap
             mishDynel = DynelManager.AllDynels.FirstOrDefault(x => x.Identity == target);
         }
 
+        int playerRoomFloor = DynelManager.LocalPlayer.Room.Floor;
+        Vector3 playerPos = DynelManager.LocalPlayer.Position;
+
         foreach (Dynel dynel in DynelManager.AllDynels)
         {
-            if (dynel.Room.Floor != DynelManager.LocalPlayer.Room.Floor)
+            if (dynel.Room.Floor != playerRoomFloor)
+                continue;
+
+            if ((playerPos - dynel.Position).LengthSquared() > distance * distance)
                 continue;
 
             Vector3 dynelPosition = new Vector3(dynel.Position.X, 0, dynel.Position.Z);
