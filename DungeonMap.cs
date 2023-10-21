@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
 using AOSharp.Common.Unmanaged.DbObjects;
+using MalisDungeonViewer;
 
 public static class DungeonMap
 {
@@ -20,11 +21,6 @@ public static class DungeonMap
     private static List<PyramidEntity> _pyramids = new List<PyramidEntity>();
     private static List<SquareEntity> _squares = new List<SquareEntity>();
     public static List<int> FilteredZoneIds = new List<int>();
-    public static Vector2 Offset = new Vector2(0.75f, 0.65f);
-    public static float Scale = 250;
-    public static bool IsStatic = false;
-    public static bool MissionPing = false;
-    public static float Distance = 1000;
     private static int? _cachedFloor = null;
 
     public static void AddCircle(string name, float size, Vector3 color)
@@ -249,12 +245,12 @@ public static class DungeonMap
         if (Camera.Pointer == IntPtr.Zero)
             return;
 
-        DrawMap(mapColor, Distance);
+        DrawMap(mapColor, Main.Settings.Distance);
 
         if (!showLegend)
             return;
 
-        DrawLegend(Distance);
+        DrawLegend(Main.Settings.Distance);
     }
     private static void DrawMap(Vector3 color, float distance)
     {
@@ -289,7 +285,7 @@ public static class DungeonMap
         Mission mission = Mission.List.FirstOrDefault(x => (*(MissionMemStruct*)x.Pointer).Playfield == Playfield.ModelIdentity);
         Dynel mishDynel = null;
 
-        if (mission != null && MissionPing)
+        if (mission != null && Main.Settings.Mission)
         {
             Identity target = new Identity();
             foreach (MissionAction missionAction in mission.Actions)
@@ -329,7 +325,7 @@ public static class DungeonMap
 
             Vector3 dynelPosition = new Vector3(dynel.Position.X, 0, dynel.Position.Z);
 
-            if (mishDynel != null && dynel.Identity == mishDynel.Identity && MissionPing)
+            if (mishDynel != null && dynel.Identity == mishDynel.Identity && Main.Settings.Mission)
             {
                 Debug.DrawLine(
                     RecalculateMesh(DynelManager.LocalPlayer.Position * new Vector3(1, 0, 1) - _floorCenter),
@@ -624,8 +620,8 @@ public static class DungeonMap
 
     private static Vector3 RecalculateMesh(Vector3 roomCorner)
     {
-        Vector3 CalcOffset = Camera.Rotation * (Vector3.Forward * 1 + Vector3.Up * Offset.Y + Vector3.Right * Offset.X);
-        return Camera.Position + (RotateY() * (RotateXZ() * (roomCorner / Scale)) + CalcOffset);
+        Vector3 CalcOffset = Camera.Rotation * (Vector3.Forward * 1 + Vector3.Up * Main.Settings.OffsetY + Vector3.Right * Main.Settings.OffsetX);
+        return Camera.Position + (RotateY() * (RotateXZ() * (roomCorner / Main.Settings.Scale)) + CalcOffset);
     }
 
     private static void DrawCube(Vector3 position, Quaternion rotation, float size, Vector3 color)
@@ -667,13 +663,13 @@ public static class DungeonMap
     }
     private static Quaternion RotateXZ()
     {
-        return IsStatic ? Camera.Rotation : new Quaternion(0,0,0,0);
+        return Main.Settings.Static ? Camera.Rotation : new Quaternion(0,0,0,0);
     }
 
     private static Quaternion RotateY()
     {
 
-        return IsStatic? new Quaternion(Camera.Rotation * Vector3.Right, (float)((-90 * Math.PI / 180))):new Quaternion(Camera.Rotation * Vector3.Right, (float)((-30 * Math.PI / 180)));
+        return Main.Settings.Static ? new Quaternion(Camera.Rotation * Vector3.Right, (float)((-90 * Math.PI / 180))):new Quaternion(Camera.Rotation * Vector3.Right, (float)((-30 * Math.PI / 180)));
     }
 
     public class MeshData : Mesh

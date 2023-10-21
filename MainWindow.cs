@@ -7,6 +7,7 @@ namespace MalisDungeonViewer
     public class MainWindow : AOSharpWindow
     {
         public Views Views;
+
         public MainWindow(string name, string path, WindowStyle windowStyle = WindowStyle.Default, WindowFlags flags = WindowFlags.AutoScale | WindowFlags.NoFade) : base(name, path, windowStyle, flags)
         {
             Views = new Views();
@@ -17,19 +18,22 @@ namespace MalisDungeonViewer
             try
             {
                 if (Window.FindView("OffsetX", out Views.OffsetX))
-                    Views.OffsetX.Value = Main.Settings["OffsetX"].AsFloat();
+                    Views.OffsetX.Value = Main.Settings.OffsetX;
+
                 if (Window.FindView("OffsetY", out Views.OffsetY))
-                    Views.OffsetY.Value = Main.Settings["OffsetY"].AsFloat();
-                if (Window.FindView("OffsetZ", out Views.OffsetZ))
-                    Views.OffsetZ.Value = Main.Settings["OffsetZ"].AsFloat();
+                    Views.OffsetY.Value = Main.Settings.OffsetY;
+
                 if (Window.FindView("Scale", out Views.Scale))
-                    Views.Scale.Value = Main.Settings["Scale"].AsFloat();
+                    Views.Scale.Value = Main.Settings.Scale;
+
                 if (Window.FindView("Static", out Views.Static))
-                    Views.Static.SetValue(Main.Settings["Static"].AsBool());
+                    Views.Static.SetValue(Main.Settings.Static);
+
                 if (Window.FindView("Mission", out Views.Mission))
-                    Views.Mission.SetValue(Main.Settings["Mission"].AsBool());
+                    Views.Mission.SetValue(Main.Settings.Mission);
+
                 if (Window.FindView("Distance", out Views.Distance))
-                    Views.Distance.SetValue(Main.Settings["Distance"].AsFloat());
+                    Views.Distance.SetValue(Main.Settings.Distance);
             }
             catch (Exception e)
             {
@@ -47,12 +51,12 @@ namespace MalisDungeonViewer
             if (!Window.IsVisible)
                 return;
 
-            DungeonMap.Offset.X = Views.OffsetX.GetValue();
-            DungeonMap.Offset.Y = Views.OffsetY.GetValue();
-            DungeonMap.Scale = Views.Scale.GetValue();
-            DungeonMap.IsStatic = Views.Static.IsChecked;
-            DungeonMap.MissionPing = Views.Mission.IsChecked;
-            DungeonMap.Distance = Views.Distance.GetValue();
+            Main.Settings.OffsetX = Views.OffsetX.GetValue();
+            Main.Settings.OffsetY = Views.OffsetY.GetValue();
+            Main.Settings.Scale = Views.Scale.GetValue();
+            Main.Settings.Static = Views.Static.IsChecked;
+            Main.Settings.Mission = Views.Mission.IsChecked;
+            Main.Settings.Distance = Views.Distance.GetValue();
         }
     }
 
@@ -60,7 +64,6 @@ namespace MalisDungeonViewer
     {
         public SliderView OffsetX;
         public SliderView OffsetY;
-        public SliderView OffsetZ;
         public SliderView Scale;
         public SliderView Distance;
         public Checkbox Static;

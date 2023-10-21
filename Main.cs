@@ -8,7 +8,8 @@ namespace MalisDungeonViewer
 {
     public class Main : AOPluginEntry
     {
-        public static Settings Settings;
+        public static Config Settings;
+        public static string PluginDir;
         private MainWindow _window;
         private bool _hideMap = false;
 
@@ -20,20 +21,11 @@ namespace MalisDungeonViewer
                 Game.TeleportEnded += Game_OnTeleportEnded;
                 Game.OnUpdate += OnUpdate;
 
-                Settings = new Settings("Mali3DMap_Settings");
-                Settings.AddVariable("OffsetX", 0f);
-                Settings.AddVariable("OffsetY", 0f);
-                Settings.AddVariable("Scale", 250);
-                Settings.AddVariable("Distance", 1000);
-                Settings.AddVariable("Static", false);
-                Settings.AddVariable("Mission", true);
+                PluginDir = pluginDir;  
+                Settings = new Config();
 
-                Settings.Save();
-
-                _window = new MainWindow("Mali's Dungeon Map", $"{pluginDir}\\XML\\Settings.xml");
-
-                _window.Show();
-                _window.Window.MoveToCenter();
+                Settings.OnLoad();
+                _window = new MainWindow("Mali's Dungeon Map", $"{PluginDir}\\UI\\MainWindow.xml");
 
                 DungeonMap.AddCube(IdentityType.Terminal, 3f, DebuggingColor.Purple);
                 DungeonMap.AddSquare(IdentityType.Door, 2f, DebuggingColor.Yellow);
@@ -77,15 +69,10 @@ namespace MalisDungeonViewer
 
         public override void Teardown()
         {
-            Settings["OffsetX"] = DungeonMap.Offset.X;
-            Settings["OffsetY"] = DungeonMap.Offset.Y;
-            Settings["Scale"] = DungeonMap.Scale;
-            Settings["Static"] = DungeonMap.IsStatic;
-            Settings["Mission"] = DungeonMap.MissionPing;
-            Settings["Distance"] = DungeonMap.Distance;
             Settings.Save();
         }
     }
+
     public class PlayfieldIds
     {
         public const int Grid = 152;
